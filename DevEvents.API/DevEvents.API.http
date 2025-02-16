@@ -1,0 +1,41 @@
+@DevEvents.API_HostAddress = http://localhost:5088
+
+### Create a new conference
+POST {{DevEvents.API_HostAddress}}/conferences
+Content-Type: application/json
+
+{
+    "title": "Tech Summit 2025",
+    "description": "A conference for technology enthusiasts.",
+    "startDate": "2025-06-10T09:00:00",
+    "endDate": "2025-06-12T18:00:00"
+}
+
+### Get all conferences
+GET {{DevEvents.API_HostAddress}}/conferences
+
+### Get a specific conference by ID
+GET {{DevEvents.API_HostAddress}}/conferences/1
+
+### Update a conference
+PUT {{DevEvents.API_HostAddress}}/conferences/1
+Content-Type: application/json
+
+{
+    "title": "Updated Tech Summit 2025",
+    "description": "A better and bigger conference for tech enthusiasts.",
+    "startDate": "2025-06-10T09:00:00",
+    "endDate": "2025-06-13T18:00:00"
+}
+
+### Delete a conference
+DELETE {{DevEvents.API_HostAddress}}/conferences/1
+
+### Add an attendee to a conference
+POST {{DevEvents.API_HostAddress}}/conferences/1/attendees
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com"
+}
