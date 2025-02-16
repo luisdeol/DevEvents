@@ -50,6 +50,8 @@ namespace DevEvents.API.Endpoints
             // 🔹 Delete a conference
             app.MapDelete("/conferences/{id}", async (AppDbContext db, int id) =>
             {
+                throw new ArgumentNullException();
+
                 var conference = await db.Conferences.FindAsync(id);
                 if (conference is null) return Results.NotFound();
 

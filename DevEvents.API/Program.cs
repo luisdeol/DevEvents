@@ -1,5 +1,6 @@
 using DevEvents.API.Endpoints;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Middlewares;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -19,6 +20,10 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
 
+builder.Services.AddProblemDetails();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -35,5 +40,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseExceptionHandler();
 
 app.Run();
