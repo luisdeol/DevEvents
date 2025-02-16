@@ -32,7 +32,7 @@ Content-Type: application/json
 DELETE {{DevEvents.API_HostAddress}}/conferences/1
 
 ### Add a registration to a conference
-POST {{DevEvents.API_HostAddress}}/conferences/1/registrations
+POST {{DevEvents.API_HostAddress}}/conferences/2/registrations
 Content-Type: application/json
 
 {

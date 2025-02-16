@@ -59,20 +59,34 @@ namespace DevEvents.API.Endpoints
                 return Results.NoContent();
             });
 
-            // 🔹 Add an registration to a conference
+            // 🔹 Add a registration to a conference
             app.MapPost("/conferences/{id}/registrations", async (AppDbContext db, int id, Attendee attendee) =>
             {
                 var conference = await db.Conferences.FindAsync(id);
 
                 if (conference is null) return Results.NotFound();
 
-                await db.Attendees.AddAsync(attendee);
-                await db.SaveChangesAsync();
+                using (var transaction = await db.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        await db.Attendees.AddAsync(attendee);
+                        await db.SaveChangesAsync();
 
-                var registration = new Registration(id, attendee.Id);
+                        var registration = new Registration(id, attendee.Id);
 
-                await db.Registrations.AddAsync(registration);
-                await db.SaveChangesAsync();
+                        await db.Registrations.AddAsync(registration);
+                        await db.SaveChangesAsync();
+
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync();
+
+                        return Results.Problem("An error occurred while processing the registration.");
+                    }
+                }
 
                 return Results.NoContent();
             });
