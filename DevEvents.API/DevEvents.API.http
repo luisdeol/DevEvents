@@ -31,8 +31,8 @@ Content-Type: application/json
 ### Delete a conference
 DELETE {{DevEvents.API_HostAddress}}/conferences/1
 
-### Add an attendee to a conference
-POST {{DevEvents.API_HostAddress}}/conferences/1/attendees
+### Add a registration to a conference
+POST {{DevEvents.API_HostAddress}}/conferences/1/registrations
 Content-Type: application/json
 
 {
