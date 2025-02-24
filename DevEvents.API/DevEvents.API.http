@@ -39,3 +39,13 @@ Content-Type: application/json
     "name": "John Doe",
     "email": "johndoe@example.com"
 }
+
+### Add a speaker to a conference
+POST {{DevEvents.API_HostAddress}}/conferences/1/speakers
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "bio": ".NET Specialist",
+    "website": "johndoe.com"
+}

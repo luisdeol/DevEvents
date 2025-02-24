@@ -2,6 +2,11 @@
 {
     public class Conference : BaseEntity
     {
+        public Conference()
+        {
+            Speakers = [];
+            Registrations = [];
+        }
         public Conference(string title, string description, DateTime startDate, DateTime endDate) : base()
         {
             Title = title;

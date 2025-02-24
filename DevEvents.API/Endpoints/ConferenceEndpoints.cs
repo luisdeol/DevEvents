@@ -19,8 +19,8 @@ namespace DevEvents.API.Endpoints
             // 🔹 Get all conferences
             app.MapGet("/conferences", async (AppDbContext db) =>
                 await db.Conferences
-                    .Include(c => c.Speakers)
-                    .Include(c => c.Registrations)
+                        .Include(c => c.Speakers)
+                        .Include(c => c.Registrations)
                     .ToListAsync()
             );
 
@@ -72,6 +72,21 @@ namespace DevEvents.API.Endpoints
                 var registration = new Registration(id, attendee.Id);
 
                 await db.Registrations.AddAsync(registration);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            // 🔹 Add a speaker to a conference
+            app.MapPost("/conferences/{id}/speakers", async (AppDbContext db, int id, Speaker speaker) =>
+            {
+                var conference = await db.Conferences.FindAsync(id);
+
+                if (conference is null) return Results.NotFound();
+
+                speaker.IdConference = id;
+
+                await db.Speakers.AddAsync(speaker);
                 await db.SaveChangesAsync();
 
                 return Results.NoContent();
