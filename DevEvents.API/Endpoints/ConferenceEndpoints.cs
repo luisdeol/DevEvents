@@ -1,5 +1,8 @@
 ﻿using DevEvents.API.Domain.Entities;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Models;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevEvents.API.Endpoints
@@ -8,8 +11,16 @@ namespace DevEvents.API.Endpoints
     {
         public static WebApplication AddConferenceEndpoints(this WebApplication app)
         {
-            app.MapPost("/conferences", async (AppDbContext db, Conference conference) =>
+            app.MapPost("/conferences", async (
+                AppDbContext db, 
+                AddConferenceInputModel model) =>
             {
+                var conference = model.Adapt<Conference>();
+
+                var conferenceV2 = new Conference();
+
+                model.Adapt(conferenceV2);
+
                 db.Conferences.Add(conference);
                 await db.SaveChangesAsync();
 
@@ -18,10 +29,15 @@ namespace DevEvents.API.Endpoints
 
             // 🔹 Get all conferences
             app.MapGet("/conferences", async (AppDbContext db) =>
-                await db.Conferences
-                        .Include(c => c.Speakers)
-                        .Include(c => c.Registrations)
-                    .ToListAsync()
+                {
+                    var conferences = await db.Conferences
+                            .Include(c => c.Speakers)
+                            .Include(c => c.Registrations)
+                        .ProjectToType<ConferenceItemViewModel>()
+                        .ToListAsync();
+
+                    return Results.Ok(conferences);
+                }
             );
 
             // 🔹 Get a specific conference by ID

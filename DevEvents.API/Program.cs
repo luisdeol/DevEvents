@@ -1,5 +1,6 @@
 using DevEvents.API.Endpoints;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Mappers;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -18,6 +19,8 @@ builder.Services.Configure<JsonOptions>(options =>
 {
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
+
+builder.Services.RegisterMaps();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
