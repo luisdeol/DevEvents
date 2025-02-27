@@ -8,8 +8,13 @@
             IsDeleted = false;
         }
 
-        public int Id { get; }
-        public DateTime CreatedAt { get; }
-        public bool IsDeleted { get; }
+        public int Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsDeleted { get; set; }
+
+        public void MarkAsDeleted()
+        {
+            IsDeleted = true;
+        }
     }
 }
