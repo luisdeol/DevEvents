@@ -2,7 +2,6 @@
 using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Models;
 using Mapster;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevEvents.API.Endpoints
@@ -11,15 +10,12 @@ namespace DevEvents.API.Endpoints
     {
         public static WebApplication AddConferenceEndpoints(this WebApplication app)
         {
+            // 🔹 Create a conference
             app.MapPost("/conferences", async (
                 AppDbContext db, 
                 AddConferenceInputModel model) =>
             {
                 var conference = model.Adapt<Conference>();
-
-                var conferenceV2 = new Conference();
-
-                model.Adapt(conferenceV2);
 
                 db.Conferences.Add(conference);
                 await db.SaveChangesAsync();
