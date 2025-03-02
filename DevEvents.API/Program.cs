@@ -1,5 +1,7 @@
+using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Endpoints;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Infrastructure.Persistence.Repositories;
 using DevEvents.API.Mappers;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,8 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 builder.Services.RegisterMaps();
+
+builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

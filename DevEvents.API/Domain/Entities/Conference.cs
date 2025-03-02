@@ -7,6 +7,7 @@
             Speakers = [];
             Registrations = [];
         }
+
         public Conference(string title, string description, DateTime startDate, DateTime endDate) : base()
         {
             Title = title;
@@ -18,12 +19,12 @@
             Registrations = [];
         }
 
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
-        public List<Speaker> Speakers { get; private set; }
-        public List<Registration> Registrations { get; private set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<Speaker> Speakers { get; set; }
+        public List<Registration> Registrations { get; set; }
 
         internal void Update(string title, string description, DateTime startDate, DateTime endDate)
         {

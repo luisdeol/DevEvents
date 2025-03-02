@@ -1,8 +1,10 @@
 ﻿using DevEvents.API.Domain.Entities;
+using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DevEvents.API.Endpoints
 {
@@ -12,94 +14,77 @@ namespace DevEvents.API.Endpoints
         {
             // 🔹 Create a conference
             app.MapPost("/conferences", async (
-                AppDbContext db, 
+                IConferenceRepository repository, 
                 AddConferenceInputModel model) =>
             {
                 var conference = model.Adapt<Conference>();
 
-                db.Conferences.Add(conference);
-                await db.SaveChangesAsync();
+                await repository.Add(conference);
 
                 return Results.Created($"/conferences/{conference.Id}", conference);
             });
 
             // 🔹 Get all conferences
-            app.MapGet("/conferences", async (AppDbContext db) =>
+            app.MapGet("/conferences", async (IConferenceRepository repository) =>
                 {
-                    var conferences = await db.Conferences
-                            .Include(c => c.Speakers)
-                            .Include(c => c.Registrations)
-                        .ProjectToType<ConferenceItemViewModel>()
-                        .ToListAsync();
+                    var conferences = await repository.GetAll();
 
-                    return Results.Ok(conferences);
+                    var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
+
+                    return Results.Ok(model);
                 }
             );
 
             // 🔹 Get a specific conference by ID
-            app.MapGet("/conferences/{id}", async (AppDbContext db, int id) =>
+            app.MapGet("/conferences/{id}", async (IConferenceRepository repository, int id) =>
             {
-                var conference = await db.Conferences
-                    .Include(c => c.Speakers)
-                    .Include(c => c.Registrations)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                var conference = await repository.GetById(id);
+
+                var model = conference.Adapt<ConferenceItemViewModel>();
 
                 return conference is not null ? Results.Ok(conference) : Results.NotFound();
             });
 
             // 🔹 Update a conference
-            app.MapPut("/conferences/{id}", async (AppDbContext db, int id, Conference updatedConference) =>
+            app.MapPut("/conferences/{id}", async (IConferenceRepository repository, int id, Conference updatedConference) =>
             {
-                var existingConference = await db.Conferences.FindAsync(id);
+                var existingConference = await repository.GetById(id);
+
                 if (existingConference is null) return Results.NotFound();
 
                 existingConference.Update(updatedConference.Title, updatedConference.Description, updatedConference.StartDate, updatedConference.EndDate);
                 
-                await db.SaveChangesAsync();
+                await repository.Update(existingConference);
+
                 return Results.NoContent();
             });
 
             // 🔹 Delete a conference
-            app.MapDelete("/conferences/{id}", async (AppDbContext db, int id) =>
+            app.MapDelete("/conferences/{id}", async (IConferenceRepository repository, int id) =>
             {
-                var conference = await db.Conferences.FindAsync(id);
-                if (conference is null) return Results.NotFound();
+                var conferenceExists = await repository.Exists(id);
 
-                db.Conferences.Remove(conference);
-                await db.SaveChangesAsync();
+                if (!conferenceExists) return Results.NotFound();
+
+                await repository.Delete(id);
 
                 return Results.NoContent();
             });
 
             // 🔹 Add an registration to a conference
-            app.MapPost("/conferences/{id}/registrations", async (AppDbContext db, int id, Attendee attendee) =>
+            app.MapPost("/conferences/{id}/registrations", async (IConferenceRepository repository, int id, Attendee attendee) =>
             {
-                var conference = await db.Conferences.FindAsync(id);
-
-                if (conference is null) return Results.NotFound();
-
-                await db.Attendees.AddAsync(attendee);
-                await db.SaveChangesAsync();
-
-                var registration = new Registration(id, attendee.Id);
-
-                await db.Registrations.AddAsync(registration);
-                await db.SaveChangesAsync();
+                await repository.AddRegistrationFromAttendee(id, attendee);
 
                 return Results.NoContent();
             });
 
             // 🔹 Add a speaker to a conference
-            app.MapPost("/conferences/{id}/speakers", async (AppDbContext db, int id, Speaker speaker) =>
+            app.MapPost("/conferences/{id}/speakers", async (IConferenceRepository repository, int id, Speaker speaker) =>
             {
-                var conference = await db.Conferences.FindAsync(id);
-
-                if (conference is null) return Results.NotFound();
-
                 speaker.IdConference = id;
 
-                await db.Speakers.AddAsync(speaker);
-                await db.SaveChangesAsync();
+                await repository.AddSpeaker(speaker);
 
                 return Results.NoContent();
             });
