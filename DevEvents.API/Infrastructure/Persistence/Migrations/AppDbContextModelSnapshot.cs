@@ -46,7 +46,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attendees");
+                    b.ToTable("Attendees", (string)null);
                 });
 
             modelBuilder.Entity("DevEvents.API.Domain.Entities.Conference", b =>
@@ -70,6 +70,10 @@ namespace DevEvents.API.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -79,7 +83,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conferences");
+                    b.ToTable("Conferences", (string)null);
                 });
 
             modelBuilder.Entity("DevEvents.API.Domain.Entities.Registration", b =>
@@ -109,7 +113,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("IdConference");
 
-                    b.ToTable("Registrations");
+                    b.ToTable("Registrations", (string)null);
                 });
 
             modelBuilder.Entity("DevEvents.API.Domain.Entities.Speaker", b =>
@@ -145,7 +149,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("IdConference");
 
-                    b.ToTable("Speakers");
+                    b.ToTable("Speakers", (string)null);
                 });
 
             modelBuilder.Entity("DevEvents.API.Domain.Entities.Registration", b =>

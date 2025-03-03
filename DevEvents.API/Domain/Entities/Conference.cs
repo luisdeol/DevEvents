@@ -25,6 +25,7 @@
         public DateTime EndDate { get; set; }
         public List<Speaker> Speakers { get; set; }
         public List<Registration> Registrations { get; set; }
+        public string Location { get; set; }
 
         internal void Update(string title, string description, DateTime startDate, DateTime endDate)
         {
