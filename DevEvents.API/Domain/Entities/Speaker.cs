@@ -2,6 +2,10 @@
 {
     public class Speaker : BaseEntity
     {
+        public Speaker()
+        {
+            
+        }
         public Speaker(string name, string bio, string website, int idConference) : base()
         {
             Name = name;

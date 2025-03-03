@@ -2,6 +2,10 @@
 {
     public class Attendee  : BaseEntity
     {
+        public Attendee()
+        {
+            
+        }
         public Attendee(string name, string email) : base()
         {
             Name = name;

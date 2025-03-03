@@ -19,9 +19,9 @@ namespace DevEvents.API.Endpoints
             {
                 var conference = model.Adapt<Conference>();
 
-                await repository.Add(conference);
+                var id = await repository.Add(conference);
 
-                return Results.Created($"/conferences/{conference.Id}", conference);
+                return Results.Created($"/conferences/{id}", conference);
             });
 
             // 🔹 Get all conferences

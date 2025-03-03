@@ -2,6 +2,10 @@
 {
     public class Registration : BaseEntity
     {
+        public Registration()
+        {
+            
+        }
         public Registration(int idConference, int idAttendee) : base()
         {
             IdConference = idConference;
