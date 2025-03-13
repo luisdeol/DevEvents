@@ -1,5 +1,6 @@
 using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Endpoints;
+using DevEvents.API.Infrastructure.Caching;
 using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Infrastructure.Persistence.Repositories;
 using DevEvents.API.Mappers;
@@ -17,6 +18,14 @@ builder.Services
         o.UseSqlServer(connectionString)
     );
 
+var redisConfig = builder.Configuration.GetSection("Redis").Get<RedisConfig>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisConfig.Configuration;
+    options.InstanceName = redisConfig.InstanceName;
+});
+
 builder.Services.Configure<JsonOptions>(options =>
 {
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
@@ -25,6 +34,7 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.RegisterMaps();
 
 builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
+builder.Services.Decorate<IConferenceRepository, CachedConferenceRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

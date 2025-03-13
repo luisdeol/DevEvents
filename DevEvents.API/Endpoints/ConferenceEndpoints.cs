@@ -4,7 +4,9 @@ using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Linq;
+using System.Text.Json;
 
 namespace DevEvents.API.Endpoints
 {
@@ -15,20 +17,42 @@ namespace DevEvents.API.Endpoints
             // 🔹 Create a conference
             app.MapPost("/conferences", async (
                 IConferenceRepository repository, 
-                AddConferenceInputModel model) =>
+                AddConferenceInputModel model,
+                IDistributedCache cache) =>
             {
                 var conference = model.Adapt<Conference>();
 
                 await repository.Add(conference);
 
+                await cache.RemoveAsync("conferences");
+
                 return Results.Created($"/conferences/{conference.Id}", conference);
             });
 
             // 🔹 Get all conferences
-            app.MapGet("/conferences", async (IConferenceRepository repository) =>
+            app.MapGet("/conferences", async (
+                IConferenceRepository repository,
+                IDistributedCache cache) =>
                 {
+                    //var cacheKey = "conferences";
+
+                    //var cachedConferences = await cache.GetStringAsync(cacheKey);
+
+                    //Conference[] conferences;
+
+                    //if (cachedConferences is not null)
+                    //{
+                    //    conferences = JsonSerializer.Deserialize<Conference[]>(cachedConferences);
+                    //} else
+                    //{
                     var conferences = await repository.GetAll();
 
+                    //    var options = new DistributedCacheEntryOptions();
+                    //    options.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+
+                    //    await cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(conferences), options);
+                    //}
+                    
                     var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
 
                     return Results.Ok(model);
