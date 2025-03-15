@@ -4,6 +4,7 @@ using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Linq;
 
 namespace DevEvents.API.Endpoints
@@ -30,6 +31,10 @@ namespace DevEvents.API.Endpoints
                     var conferences = await repository.GetAll();
 
                     var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
+
+                    var count = model.Count();
+
+                    Log.Information(count == 0 ? "No conferences found." : $"{count} conferences found.");
 
                     return Results.Ok(model);
                 }
