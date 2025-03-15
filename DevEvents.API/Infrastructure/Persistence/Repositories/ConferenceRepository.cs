@@ -1,5 +1,6 @@
 ﻿using DevEvents.API.Domain.Entities;
 using DevEvents.API.Domain.Repositories;
+using DevEvents.API.Infrastructure.Persistence.Models;
 using DevEvents.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,7 +41,9 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
 
         public async Task Delete(int id)
         {
-            var conference = await GetById(id);
+            var criteria = new SingleConferenceCriteria(id);
+
+            var conference = await GetById(criteria);
 
             conference.MarkAsDeleted();
 
@@ -52,22 +55,28 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             return await _db.Conferences.AnyAsync(c => c.Id == id);
         }
 
-        public async Task<Conference[]> GetAll()
+        public async Task<Conference[]> GetAll(ConferencesFilterCriteria criteria)
         {
+            var dbSet = _db.Conferences;
+            
             var conferences = await _db.Conferences
-                            .Include(c => c.Speakers)
-                            .Include(c => c.Registrations)
-                        .ToArrayAsync();
+                .AsQueryable<Conference>()
+                .BuildIncludes(criteria)
+                .BuildFilters(criteria)
+                .BuildPagination(criteria)
+                .ToArrayAsync();
 
             return conferences;
         }
 
-        public async Task<Conference?> GetById(int id)
+        
+
+        public async Task<Conference?> GetById(SingleConferenceCriteria criteria)
         {
             var conference = await _db.Conferences
-                    .Include(c => c.Speakers)
-                    .Include(c => c.Registrations)
-                    .SingleOrDefaultAsync(c => c.Id == id);
+                .AsQueryable<Conference>()
+                .BuildIncludes(criteria)
+                .SingleOrDefaultAsync(c => c.Id == criteria.Id);
 
             return conference;
         }
@@ -76,6 +85,48 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
         {
             _db.Conferences.Update(conference);
             await _db.SaveChangesAsync();
+        }
+    }
+
+    public static class ConferenceQueryableExtensions
+    {
+        public static IQueryable<Conference> BuildIncludes(this IQueryable<Conference> query, ConferenceFilterCriteriaBase criteria)
+        {
+            if (criteria.IncludeSpeakers ?? false)
+            {
+                query = query.Include(q => q.Speakers);
+            }
+
+            if (criteria.IncludeRegistrations ?? false)
+            {
+                query = query.Include(q => q.Registrations);
+            }
+
+            return query;
+        }
+
+        public static IQueryable<Conference> BuildFilters(this IQueryable<Conference> query, ConferenceFilterCriteriaBase criteria)
+        {
+            if (criteria.StartDate is not null && criteria.EndDate is not null)
+            {
+                query = query.Where(q => q.StartDate > criteria.StartDate && q.EndDate < criteria.EndDate);
+            }
+
+            if (!string.IsNullOrWhiteSpace(criteria.Title))
+            {
+                query = query.Where(q => q.Title.Contains(criteria.Title));
+            }
+
+            return query;
+        }
+
+        public static IQueryable<Conference> BuildPagination(this IQueryable<Conference> query, ConferencesFilterCriteria criteria)
+        {
+            query = query
+                .Skip((criteria.Page - 1) * criteria.PageSize)
+                .Take(criteria.PageSize);
+
+            return query;
         }
     }
 }

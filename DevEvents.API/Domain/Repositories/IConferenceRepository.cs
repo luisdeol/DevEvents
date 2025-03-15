@@ -1,12 +1,13 @@
 ﻿using DevEvents.API.Domain.Entities;
+using DevEvents.API.Infrastructure.Persistence.Models;
 
 namespace DevEvents.API.Domain.Repositories
 {
     public interface IConferenceRepository
     {
         Task<int> Add(Conference conference);
-        Task<Conference[]> GetAll();
-        Task<Conference?> GetById(int id);
+        Task<Conference[]> GetAll(ConferencesFilterCriteria criteria);
+        Task<Conference?> GetById(SingleConferenceCriteria criteria);
         Task<bool> Exists(int id);
         Task Update(Conference conference);
         Task Delete(int id);

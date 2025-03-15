@@ -14,6 +14,10 @@ Content-Type: application/json
 ### Get all conferences
 GET {{DevEvents.API_HostAddress}}/conferences
 
+### Get all conferences - Filter criteria
+GET {{DevEvents.API_HostAddress}}/conferences?startDate=2025-06-10&endDate=2025-06-14&page=3
+
+
 ### Get a specific conference by ID
 GET {{DevEvents.API_HostAddress}}/conferences/1
 

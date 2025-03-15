@@ -1,8 +1,10 @@
 ﻿using DevEvents.API.Domain.Entities;
 using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Infrastructure.Persistence.Models;
 using DevEvents.API.Models;
 using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -25,9 +27,20 @@ namespace DevEvents.API.Endpoints
             });
 
             // 🔹 Get all conferences
-            app.MapGet("/conferences", async (IConferenceRepository repository) =>
+            app.MapGet("/conferences", async (IConferenceRepository repository, [AsParameters] ConferencesFilterCriteriaModel criteria) =>
                 {
-                    var conferences = await repository.GetAll();
+                    var dbCriteria = new ConferencesFilterCriteria
+                    {
+                        StartDate = criteria.StartDate,
+                        EndDate = criteria.EndDate,
+                        Title = criteria.Title,
+                        IncludeSpeakers = true,
+                        IncludeRegistrations = true,
+                        Page = criteria.Page ?? 1,
+                        PageSize = criteria.PageSize ?? 2
+                    };
+
+                    var conferences = await repository.GetAll(dbCriteria);
 
                     var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
 
@@ -38,7 +51,9 @@ namespace DevEvents.API.Endpoints
             // 🔹 Get a specific conference by ID
             app.MapGet("/conferences/{id}", async (IConferenceRepository repository, int id) =>
             {
-                var conference = await repository.GetById(id);
+                var criteria = new SingleConferenceCriteria(id, true, true);
+
+                var conference = await repository.GetById(criteria);
 
                 var model = conference.Adapt<ConferenceItemViewModel>();
 
@@ -48,7 +63,9 @@ namespace DevEvents.API.Endpoints
             // 🔹 Update a conference
             app.MapPut("/conferences/{id}", async (IConferenceRepository repository, int id, Conference updatedConference) =>
             {
-                var existingConference = await repository.GetById(id);
+                var criteria = new SingleConferenceCriteria(id);
+
+                var existingConference = await repository.GetById(criteria);
 
                 if (existingConference is null) return Results.NotFound();
 
