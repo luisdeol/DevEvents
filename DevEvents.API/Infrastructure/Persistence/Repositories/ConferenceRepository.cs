@@ -67,6 +67,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             var conference = await _db.Conferences
                     .Include(c => c.Speakers)
                     .Include(c => c.Registrations)
+                        .ThenInclude(r => r.Attendee)
                     .SingleOrDefaultAsync(c => c.Id == id);
 
             return conference;

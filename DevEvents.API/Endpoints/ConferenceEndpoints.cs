@@ -1,9 +1,11 @@
 ﻿using DevEvents.API.Domain.Entities;
 using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Infrastructure.Reports;
 using DevEvents.API.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 using System.Linq;
 
 namespace DevEvents.API.Endpoints
@@ -87,6 +89,19 @@ namespace DevEvents.API.Endpoints
                 await repository.AddSpeaker(speaker);
 
                 return Results.NoContent();
+            });
+
+            app.MapGet("/conferences/{id}/report", async (
+                IConferenceRepository repository,
+                int id) =>
+            {
+                var conference = await repository.GetById(id);
+
+                var report = new ConferenceDetailsReport(conference);
+
+                var pdf = report.GeneratePdf();
+
+                return Results.File(pdf, "application/pdf");
             });
 
             return app;
