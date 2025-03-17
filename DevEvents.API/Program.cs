@@ -1,5 +1,6 @@
 using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Endpoints;
+using DevEvents.API.Infrastructure.Notifications;
 using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Infrastructure.Persistence.Repositories;
 using DevEvents.API.Mappers;
@@ -25,6 +26,8 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.RegisterMaps();
 
 builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
+
+builder.Services.AddScoped<INotificationService, EmailService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

@@ -49,3 +49,19 @@ Content-Type: application/json
     "bio": ".NET Specialist",
     "website": "johndoe.com"
 }
+
+### HangfireEvents - Fire And Forget
+GET {{DevEvents.API_HostAddress}}/fire-and-forget
+
+### HangfireEvents - Fire And Forget - Continuation
+GET {{DevEvents.API_HostAddress}}/fire-and-forget-continuation
+
+### HangfireEvents - Fire And Forget - Delayed
+GET {{DevEvents.API_HostAddress}}/delayed
+
+### HangfireEvents - Recurring
+GET {{DevEvents.API_HostAddress}}/recurring
+
+### HangfireEvents - Job
+GET {{DevEvents.API_HostAddress}}/cancel-job/recurring-ff9763d7-da24-48e4-aa91-7d6119957227
+
