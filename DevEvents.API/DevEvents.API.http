@@ -57,11 +57,11 @@ GET {{DevEvents.API_HostAddress}}/fire-and-forget
 GET {{DevEvents.API_HostAddress}}/fire-and-forget-continuation
 
 ### HangfireEvents - Fire And Forget - Delayed
-GET {{DevEvents.API_HostAddress}}/delayed
+GET {{DevEvents.API_HostAddress}}/fire-and-forget-delayed
 
 ### HangfireEvents - Recurring
 GET {{DevEvents.API_HostAddress}}/recurring
 
 ### HangfireEvents - Job
-GET {{DevEvents.API_HostAddress}}/cancel-job/recurring-ff9763d7-da24-48e4-aa91-7d6119957227
+GET {{DevEvents.API_HostAddress}}/cancel-job/recurring-job-70cdd9a0-c9c1-4f31-a6a1-5d79b728e2fe
 

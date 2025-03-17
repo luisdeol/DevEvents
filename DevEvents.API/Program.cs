@@ -4,6 +4,7 @@ using DevEvents.API.Infrastructure.Notifications;
 using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Infrastructure.Persistence.Repositories;
 using DevEvents.API.Mappers;
+using Hangfire;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -29,13 +30,21 @@ builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
 
 builder.Services.AddScoped<INotificationService, EmailService>();
 
+builder.Services.AddHangfire((s, config) =>
+{
+    config.UseSqlServerStorage(connectionString);
+});
+
+builder.Services.AddHangfireServer();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 app
-    .AddConferenceEndpoints();
+    .AddConferenceEndpoints()
+    .AddJobsEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -45,5 +54,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseHangfireDashboard();
 
 app.Run();
