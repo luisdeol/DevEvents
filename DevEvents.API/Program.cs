@@ -12,9 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("AppDb");
 
+
 builder.Services
-    .AddDbContext<AppDbContext>(o => 
-        o.UseSqlServer(connectionString)
+    .AddDbContext<AppDbContext>(o =>
+        o.UseInMemoryDatabase("AppDb")
     );
 
 builder.Services.Configure<JsonOptions>(options =>
