@@ -1,4 +1,4 @@
-@DevEvents.API_HostAddress = http://localhost:5088
+@DevEvents.API_HostAddress = http://localhost:5000
 
 ### Create a new conference
 POST {{DevEvents.API_HostAddress}}/conferences
