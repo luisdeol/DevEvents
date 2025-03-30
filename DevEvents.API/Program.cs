@@ -21,6 +21,8 @@ builder.Services.RegisterMaps();
 
 builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
 
+builder.Services.AddMemoryCache();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

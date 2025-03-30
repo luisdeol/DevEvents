@@ -4,6 +4,7 @@ using DevEvents.API.Infrastructure.Persistence;
 using DevEvents.API.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Linq;
 
 namespace DevEvents.API.Endpoints
@@ -25,22 +26,55 @@ namespace DevEvents.API.Endpoints
             });
 
             // 🔹 Get all conferences
-            app.MapGet("/conferences", async (IConferenceRepository repository) =>
+            app.MapGet("/conferences", async (IConferenceRepository repository, IMemoryCache cache) =>
                 {
-                    var conferences = await repository.GetAll();
+                    const string cacheKey = "conferences";
 
-                    var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
+                    //if (!cache.TryGetValue(cacheKey, out List<ConferenceItemViewModel>? conferences))
+                    //{
+                    //    var conferencesDb = await repository.GetAll();
 
-                    return Results.Ok(model);
+                    //    conferences = conferencesDb.Select(c => c.Adapt<ConferenceItemViewModel>()).ToList();
+
+                    //    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    //        .SetSlidingExpiration(TimeSpan.FromMinutes(10))
+                    //        .SetAbsoluteExpiration(TimeSpan.FromHours(1));
+
+                    //    cache.Set(cacheKey, conferences, cacheEntryOptions);
+                    //}
+
+                    var conferences = await cache.GetOrCreateAsync(cacheKey, async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromMinutes(10);
+                        entry.AbsoluteExpiration = DateTime.UtcNow.AddHours(1);
+
+                        var conferencesDb = await repository.GetAll();
+
+                        var model = conferencesDb.Select(c => c.Adapt<ConferenceItemViewModel>()).ToList();
+
+                        return model;
+                    });
+                    
+                    return Results.Ok(conferences);
                 }
             );
 
             // 🔹 Get a specific conference by ID
-            app.MapGet("/conferences/{id}", async (IConferenceRepository repository, int id) =>
+            app.MapGet("/conferences/{id}", async (IConferenceRepository repository, int id, IMemoryCache cache) =>
             {
-                var conference = await repository.GetById(id);
+                var cacheKey = $"conferences:{id}";
 
-                var model = conference.Adapt<ConferenceItemViewModel>();
+                var conference = await cache.GetOrCreateAsync(cacheKey, async entry =>
+                {
+                    entry.SlidingExpiration = TimeSpan.FromMinutes(10);
+                    entry.AbsoluteExpiration = DateTime.UtcNow.AddHours(1);
+
+                    var conferenceDb = await repository.GetById(id);
+
+                    var model = conferenceDb.Adapt<ConferenceItemViewModel>();
+
+                    return model;
+                });
 
                 return conference is not null ? Results.Ok(conference) : Results.NotFound();
             });
