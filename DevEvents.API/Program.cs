@@ -17,11 +17,6 @@ builder.Services
         o.UseSqlServer(connectionString)
     );
 
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-});
-
 builder.Services.RegisterMaps();
 
 builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
