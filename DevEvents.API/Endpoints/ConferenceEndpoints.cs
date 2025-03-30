@@ -89,6 +89,23 @@ namespace DevEvents.API.Endpoints
                 return Results.NoContent();
             });
 
+            app.MapGet("/export", () =>
+            {
+                using (var ms = new MemoryStream())
+                {
+                    using (var writer = new StreamWriter(ms))
+                    {
+                        writer.WriteLine("Conference,Date");
+                        writer.WriteLine("NWE Summit,2025-05-01");
+                        writer.Flush();
+
+                        ms.Position = 0;
+
+                        return Results.File(ms.ToArray(), "text/csv", "conferences.csv");
+                    }
+                }
+            });
+
             return app;
         }
     }

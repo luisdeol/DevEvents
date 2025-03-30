@@ -49,3 +49,6 @@ Content-Type: application/json
     "bio": ".NET Specialist",
     "website": "johndoe.com"
 }
+
+### Export conferences
+GET {{DevEvents.API_HostAddress}}/export
