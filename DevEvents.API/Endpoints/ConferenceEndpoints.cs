@@ -21,7 +21,9 @@ namespace DevEvents.API.Endpoints
 
                 await repository.Add(conference);
 
-                return Results.Created($"/conferences/{conference.Id}", conference);
+                // return Results.Created($"/conferences/{conference.Id}", conference);
+
+                return conference.ToCreatedResult($"/conferences/{conference.Id}");
             });
 
             // 🔹 Get all conferences
@@ -29,9 +31,13 @@ namespace DevEvents.API.Endpoints
                 {
                     var conferences = await repository.GetAll();
 
-                    var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
+                    var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>()).ToList();
 
-                    return Results.Ok(model);
+                    // var result = ResultData<List<ConferenceItemViewModel>>.Success(model);
+
+                    // return Results.Ok(result);
+
+                    return model.ToOkResult();
                 }
             );
 
@@ -42,7 +48,24 @@ namespace DevEvents.API.Endpoints
 
                 var model = conference.Adapt<ConferenceItemViewModel>();
 
-                return conference is not null ? Results.Ok(conference) : Results.NotFound();
+                //ResultData<ConferenceItemViewModel> result;
+
+                //if (model is null)
+                //{
+                //    var message = "Not found";
+
+                //    result = ResultData<ConferenceItemViewModel>.Error(message);
+
+                //    return Results.NotFound(result);
+                //}
+                //else
+                //{
+                //    result = ResultData<ConferenceItemViewModel>.Success(model);
+                //}
+
+                //return Results.Ok(result);
+
+                return model.ToSingleResult();
             });
 
             // 🔹 Update a conference
