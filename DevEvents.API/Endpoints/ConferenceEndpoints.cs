@@ -104,6 +104,20 @@ namespace DevEvents.API.Endpoints
                 return Results.File(pdf, "application/pdf");
             });
 
+            app.MapGet("/conferences/{id}/csv-report", async (
+                IConferenceRepository repository,
+                IConferenceCsvReportGenerator csvGenerator,
+                int id) =>
+            {
+                var conference = await repository.GetById(id);
+
+                await csvGenerator.Generate(conference);
+
+                var model = await csvGenerator.Read(id);
+
+                return Results.File(model.Bytes, "text/csv");
+            });
+
             return app;
         }
     }

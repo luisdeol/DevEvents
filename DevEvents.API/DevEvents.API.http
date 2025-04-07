@@ -20,6 +20,9 @@ GET {{DevEvents.API_HostAddress}}/conferences/1
 ### Get a specific conference by ID - Report
 GET {{DevEvents.API_HostAddress}}/conferences/1/report
 
+### Get a specific conference by ID - CSV Report
+GET {{DevEvents.API_HostAddress}}/conferences/1/csv-report
+
 ### Update a conference
 PUT {{DevEvents.API_HostAddress}}/conferences/1
 Content-Type: application/json
