@@ -1,8 +1,10 @@
 ﻿using DevEvents.API.Domain.Entities;
 using DevEvents.API.Domain.Repositories;
 using DevEvents.API.Infrastructure.Persistence;
+using DevEvents.API.Infrastructure.Storage;
 using DevEvents.API.Models;
 using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -97,7 +99,63 @@ namespace DevEvents.API.Endpoints
                 return Results.NoContent();
             });
 
+            app.MapPost("/conferences/{id}/photos", async (
+                [FromServices] IStorageService storageService,
+                string id,
+                IFormFile file) =>
+            {
+                if (file is null || file.Length == 0)
+                {
+                    return Results.BadRequest("File not found.");
+                }
+
+                using var stream = file.OpenReadStream();
+
+                var success = await storageService.UploadPhoto(id, file.FileName, stream);
+                
+                if (!success)
+                {
+                    return Results.InternalServerError();
+                }
+
+                var blobName = $"{id}/{file.FileName}";
+
+                return Results.Ok(new { Path = blobName, Message = "Photo was uploaded successfully." });
+            }).DisableAntiforgery();
+
+            app.MapGet("/conferences/{id}/photos/{fileName}", async (
+                IStorageService storageService,
+                string id,
+                string fileName) =>
+            {
+                var stream = await storageService.DownloadPhoto(id, fileName);
+
+                if (stream == null)
+                {
+                    return Results.NotFound("File not found.");
+                }
+
+                var contentType = GetContentType(fileName);
+
+                return Results.File(stream, contentType, fileName);
+            });
+
             return app;
+        }
+
+        static string GetContentType(string fileName)
+        {
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".pdf" => "application/pdf",
+                ".txt" => "text/plain",
+                _ => "application/octet-stream"
+            };
         }
     }
 }
