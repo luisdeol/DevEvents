@@ -4,6 +4,6 @@ namespace DevEvents.API.Domain.Repositories
 {
     public interface IAttendeeRepository
     {
-        Task<int> Add(Attendee attendee);
+        Task<int> AddAsync(Attendee attendee);
     }
 }

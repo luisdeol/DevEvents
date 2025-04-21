@@ -4,13 +4,13 @@ namespace DevEvents.API.Domain.Repositories
 {
     public interface IConferenceRepository
     {
-        Task<int> Add(Conference conference);
-        Task<Conference[]> GetAll();
-        Task<Conference?> GetById(int id);
-        Task<bool> Exists(int id);
-        Task Update(Conference conference);
-        Task Delete(int id);
-        Task AddRegistration(Registration registration);
-        Task AddSpeaker(Speaker speaker);
+        Task<int> AddAsync(Conference conference);
+        Task<Conference[]> GetAllAsync();
+        Task<Conference?> GetByIdAsync(int id);
+        Task<bool> ExistsAsync(int id);
+        Task UpdateAsync(Conference conference);
+        Task DeleteAsync(int id);
+        Task AddRegistrationAsync(Registration registration);
+        Task AddSpeakerAsync(Speaker speaker);
     }
 }

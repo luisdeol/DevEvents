@@ -11,7 +11,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             _db = db;
         }
 
-        public async Task<int> Add(Attendee attendee)
+        public async Task<int> AddAsync(Attendee attendee)
         {
             await _db.Attendees.AddAsync(attendee);
             await _db.SaveChangesAsync();

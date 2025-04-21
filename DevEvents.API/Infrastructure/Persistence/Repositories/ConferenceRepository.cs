@@ -13,7 +13,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             _db = db;
         }
 
-        public async Task<int> Add(Conference conference)
+        public async Task<int> AddAsync(Conference conference)
         {
             _db.Conferences.Add(conference);
             await _db.SaveChangesAsync();
@@ -21,33 +21,33 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             return conference.Id;
         }
 
-        public async Task AddRegistration(Registration registration)
+        public async Task AddRegistrationAsync(Registration registration)
         {
             await _db.Registrations.AddAsync(registration);
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddSpeaker(Speaker speaker)
+        public async Task AddSpeakerAsync(Speaker speaker)
         {
             await _db.Speakers.AddAsync(speaker);
             await _db.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var conference = await GetById(id);
+            var conference = await GetByIdAsync(id);
 
             conference.MarkAsDeleted();
 
             await _db.SaveChangesAsync();
         }
 
-        public async Task<bool> Exists(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
             return await _db.Conferences.AnyAsync(c => c.Id == id);
         }
 
-        public async Task<Conference[]> GetAll()
+        public async Task<Conference[]> GetAllAsync()
         {
             var conferences = await _db.Conferences
                             .Include(c => c.Speakers)
@@ -57,7 +57,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             return conferences;
         }
 
-        public async Task<Conference?> GetById(int id)
+        public async Task<Conference?> GetByIdAsync(int id)
         {
             var conference = await _db.Conferences
                     .Include(c => c.Speakers)
@@ -67,7 +67,7 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             return conference;
         }
 
-        public async Task Update(Conference conference)
+        public async Task UpdateAsync(Conference conference)
         {
             _db.Conferences.Update(conference);
             await _db.SaveChangesAsync();

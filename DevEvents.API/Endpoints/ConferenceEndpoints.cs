@@ -19,7 +19,7 @@ namespace DevEvents.API.Endpoints
             {
                 var conference = model.Adapt<Conference>();
 
-                await repository.Add(conference);
+                await repository.AddAsync(conference);
 
                 return Results.Created($"/conferences/{conference.Id}", conference);
             });
@@ -27,7 +27,7 @@ namespace DevEvents.API.Endpoints
             // 🔹 Get all conferences
             app.MapGet("/conferences", async (IConferenceRepository repository) =>
                 {
-                    var conferences = await repository.GetAll();
+                    var conferences = await repository.GetAllAsync();
 
                     var model = conferences.Select(c => c.Adapt<ConferenceItemViewModel>());
 
@@ -38,7 +38,7 @@ namespace DevEvents.API.Endpoints
             // 🔹 Get a specific conference by ID
             app.MapGet("/conferences/{id}", async (IConferenceRepository repository, int id) =>
             {
-                var conference = await repository.GetById(id);
+                var conference = await repository.GetByIdAsync(id);
 
                 var model = conference.Adapt<ConferenceItemViewModel>();
 
@@ -48,13 +48,13 @@ namespace DevEvents.API.Endpoints
             // 🔹 Update a conference
             app.MapPut("/conferences/{id}", async (IConferenceRepository repository, int id, Conference updatedConference) =>
             {
-                var existingConference = await repository.GetById(id);
+                var existingConference = await repository.GetByIdAsync(id);
 
                 if (existingConference is null) return Results.NotFound();
 
                 existingConference.Update(updatedConference.Title, updatedConference.Description, updatedConference.StartDate, updatedConference.EndDate);
                 
-                await repository.Update(existingConference);
+                await repository.UpdateAsync(existingConference);
 
                 return Results.NoContent();
             });
@@ -62,11 +62,11 @@ namespace DevEvents.API.Endpoints
             // 🔹 Delete a conference
             app.MapDelete("/conferences/{id}", async (IConferenceRepository repository, int id) =>
             {
-                var conferenceExists = await repository.Exists(id);
+                var conferenceExists = await repository.ExistsAsync(id);
 
                 if (!conferenceExists) return Results.NotFound();
 
-                await repository.Delete(id);
+                await repository.DeleteAsync(id);
 
                 return Results.NoContent();
             });
@@ -78,11 +78,11 @@ namespace DevEvents.API.Endpoints
             {
                 var attendee = new Attendee(model.AttendeeName, model.AttendeeEmail);
 
-                var idAttendee = await attendeeRepository.Add(attendee);
+                var idAttendee = await attendeeRepository.AddAsync(attendee);
 
                 var registration = new Registration(id, idAttendee);
 
-                await conferenceRepository.AddRegistration(registration);
+                await conferenceRepository.AddRegistrationAsync(registration);
 
                 return Results.NoContent();
             });
@@ -92,7 +92,7 @@ namespace DevEvents.API.Endpoints
             {
                 speaker.IdConference = id;
 
-                await repository.AddSpeaker(speaker);
+                await repository.AddSpeakerAsync(speaker);
 
                 return Results.NoContent();
             });
