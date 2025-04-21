@@ -10,7 +10,7 @@ namespace DevEvents.API.Domain.Repositories
         Task<bool> Exists(int id);
         Task Update(Conference conference);
         Task Delete(int id);
-        Task AddRegistrationFromAttendee(int idConference, Attendee attendee);
+        Task AddRegistration(Registration registration);
         Task AddSpeaker(Speaker speaker);
     }
 }

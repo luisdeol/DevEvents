@@ -21,13 +21,8 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
             return conference.Id;
         }
 
-        public async Task AddRegistrationFromAttendee(int idConference, Attendee attendee)
+        public async Task AddRegistration(Registration registration)
         {
-            await _db.Attendees.AddAsync(attendee);
-            await _db.SaveChangesAsync();
-
-            var registration = new Registration(idConference, attendee.Id);
-
             await _db.Registrations.AddAsync(registration);
             await _db.SaveChangesAsync();
         }

@@ -25,6 +25,7 @@ builder.Services.Configure<JsonOptions>(options =>
 builder.Services.RegisterMaps();
 
 builder.Services.AddScoped<IConferenceRepository, ConferenceRepository>();
+builder.Services.AddScoped<IAttendeeRepository, AttendeeRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

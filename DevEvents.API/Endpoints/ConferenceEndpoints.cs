@@ -72,9 +72,17 @@ namespace DevEvents.API.Endpoints
             });
 
             // 🔹 Add an registration to a conference
-            app.MapPost("/conferences/{id}/registrations", async (IConferenceRepository repository, int id, Attendee attendee) =>
+            app.MapPost("/conferences/{id}/registrations", async (
+                IConferenceRepository conferenceRepository, 
+                IAttendeeRepository attendeeRepository, int id, RegistrationInputModel model) =>
             {
-                await repository.AddRegistrationFromAttendee(id, attendee);
+                var attendee = new Attendee(model.AttendeeName, model.AttendeeEmail);
+
+                var idAttendee = await attendeeRepository.Add(attendee);
+
+                var registration = new Registration(id, idAttendee);
+
+                await conferenceRepository.AddRegistration(registration);
 
                 return Results.NoContent();
             });

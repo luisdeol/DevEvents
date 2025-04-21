@@ -36,8 +36,8 @@ POST {{DevEvents.API_HostAddress}}/conferences/1/registrations
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": "johndoe@example.com"
+    "attendeeName": "John Doe",
+    "attendeeEmail": "johndoe@example.com"
 }
 
 ### Add a speaker to a conference
