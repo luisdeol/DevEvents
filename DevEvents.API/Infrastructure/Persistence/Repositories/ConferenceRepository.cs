@@ -24,7 +24,6 @@ namespace DevEvents.API.Infrastructure.Persistence.Repositories
         public async Task AddRegistrationAsync(Registration registration)
         {
             await _db.Registrations.AddAsync(registration);
-            await _db.SaveChangesAsync();
         }
 
         public async Task AddSpeakerAsync(Speaker speaker)

@@ -74,17 +74,35 @@ namespace DevEvents.API.Endpoints
             // 🔹 Add an registration to a conference
             app.MapPost("/conferences/{id}/registrations", async (
                 IConferenceRepository conferenceRepository, 
-                IAttendeeRepository attendeeRepository, int id, RegistrationInputModel model) =>
+                IAttendeeRepository attendeeRepository, 
+                IUnitOfWork unitOfWork,
+                int id, RegistrationInputModel model) =>
             {
                 var attendee = new Attendee(model.AttendeeName, model.AttendeeEmail);
 
-                var idAttendee = await attendeeRepository.AddAsync(attendee);
+                try
+                {
+                    await unitOfWork.BeginTransactionAsync();
 
-                var registration = new Registration(id, idAttendee);
+                    await unitOfWork.Attendees.AddAsync(attendee);
 
-                await conferenceRepository.AddRegistrationAsync(registration);
+                    await unitOfWork.SaveAsync();
 
-                return Results.NoContent();
+                    var registration = new Registration(id, attendee.Id);
+
+                    await unitOfWork.Conferences.AddRegistrationAsync(registration);
+
+                    await unitOfWork.SaveAsync();
+
+                    await unitOfWork.CommitTransactionAsync();
+
+                    return Results.NoContent();
+                } catch (Exception)
+                {
+                    await unitOfWork.RollbackTransactionAsync();
+
+                    return Results.Problem("Error when registering participant.");
+                }
             });
 
             // 🔹 Add a speaker to a conference
